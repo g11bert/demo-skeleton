@@ -1,7 +1,23 @@
-# todo.py 待办清单 最简版 v1
-# 功能： 添加代办 + 查看清单
+# todo.py  保存到文件 v4
 
-todos = []
+import json 
+
+FILE_NAME = "todos.json"
+
+def load_todos():
+    """启动时读取文件里的待办，文件不存在就返回空列表"""
+    try:
+        with open(FILE_NAME, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return []
+    
+def save_todos(todos):
+    """把待办写回文件"""
+    with open(FILE_NAME, "w", encoding="utf-8") as f:
+        json.dump(todos, f, ensure_ascii=False, indent=2)
+
+todos = load_todos()
 
 while True:
     print("\n==== 待办清单 ====")
@@ -16,6 +32,7 @@ while True:
     if choice == "1":
         new_todo = input("请输出代办内容：")
         todos.append({"text": new_todo, "done": False})
+        save_todos(todos)
         print("已添加！")
 
     elif choice == "2":
@@ -43,6 +60,7 @@ while True:
 
             if 1 <= num <= len(todos):
                 removed = todos.pop(num - 1)
+                save_todos(todos)
                 print(f"已删除：{removed['text']}")
             else:
                 print("编号无效")
@@ -63,6 +81,7 @@ while True:
                 continue
             if 1 <= num <= len(todos):
                 todos[num - 1]["done"] = True
+                save_todos(todos)
                 print(f"已标记完成：{todos[num - 1]['text']}")
             else:
                 print("编号无效")
